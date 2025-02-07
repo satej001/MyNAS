@@ -1,0 +1,11 @@
+Contents of the Zip file: 
+--------------------------------------------------------------------------------------------------------------------------------------------
+1. Welcome page- It will give you options for either sign up or login.
+
+2. Login page- It will contain fields for email and password, and the dashboard will appear only if the user has an account and is logged in.
+
+3. Signup page- A basic signup form for new users who don't have an account containing fields for name, email, creating a password and confirming/re-entering the password.
+
+4. Dashboard page- This dashboard contains a sidebar with options of settings, search, users, and logout; the main content panel which includes the files categorized in types: Music, Folder, File and Images.
+
+============================================================THE END=========================================================================
