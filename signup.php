@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - MyNAS</title>
+    <title>Sign Up - FileARK</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Valid email is required.";
     }
 
-    if (empty($password) || strlen($password) < 6) {
+    if (empty($password) || strlen($password) < 8) {
         $errors[] = "Password must be at least 6 characters.";
     }
 
