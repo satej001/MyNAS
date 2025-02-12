@@ -50,10 +50,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <form action="upload.php" method="post" enctype="multipart/form-data">
             <button class="btn" id="choose-file-btn">Choose File</button>
-            <input type="file" id="file-input" style="display: none;">
+            <input type="file" id="file-input"/>
             <span id="file-chosen">No File Chosen</span>
             <button type="submit" class="btn">Upload</button>
         </form>
     </div>
+
+    <script>
+    // Ensure script runs after the DOM loads
+    document.addEventListener("DOMContentLoaded", function () {
+        const fileInput = document.getElementById("file-input");
+        const chooseFileBtn = document.getElementById("choose-file-btn");
+        const fileChosenText = document.getElementById("file-chosen");
+
+        chooseFileBtn.addEventListener("click", function () {
+            fileInput.click(); // This should trigger the file selection window
+        });
+
+        fileInput.addEventListener("change", function () {
+            fileChosenText.textContent = this.files.length > 0 ? this.files[0].name : "No file chosen";
+        });
+    });
+</script>
 </body>
 </html>
