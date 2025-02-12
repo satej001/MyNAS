@@ -184,7 +184,7 @@ button, input {
 }
 
 .sidebar .icon-link {
-    color: rgb(144, 15, 15);
+    color: darkred;
     font-size: 24px;
     text-decoration: none;
     display: inline-block;
@@ -194,7 +194,7 @@ button, input {
 }
 
 .sidebar .icon-link:hover {
-    background: rgba(0, 0, 0, 0.8); /* Darker hover effect */
+    background: transparent; /* Darker hover effect */
 }
 
 /* Hover effect to make the icon more visible */
@@ -338,7 +338,7 @@ button, input {
     top: 0; /* Distance from the top */
     right: 0; /* Distance from the right */
     font-size: 24px; /* Adjust icon size */
-    color: rgb(144, 15, 15);
+    color: darkred;
     background: transparent;
     padding: 10px; /* Padding around the icon */
     border-radius: 50%; /* Makes it circular */
@@ -348,4 +348,20 @@ button, input {
 
 .profile-icon:hover {
     background: rgba(0, 0, 0, 0.8); /* Darker background on hover */
+}
+
+.message {
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 5px;
+    color: darkred;
+    margin-bottom: 10px;
+}
+
+.message:contains("✅") {
+    background: #28a745;
+}
+
+.message:contains("❌") {
+    background: #dc3545;
 }
