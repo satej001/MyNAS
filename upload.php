@@ -49,8 +49,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php if (isset($message)) echo "<p class='message'>$message</p>"; ?>
 
         <form action="upload.php" method="post" enctype="multipart/form-data">
-            <input type="file" class="btn" name="fileToUpload" required>
-            <label for="file" id="customFileLabel">No file chosen</label>
+            <label for="file-input" class="file-label">Choose File</label>
+            <input type="file" id="file-input" required>
+            <span id="file-chosen">No File Chosen</span>
             <button type="submit" class="btn">Upload</button>
         </form>
     </div>
