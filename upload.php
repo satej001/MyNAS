@@ -50,7 +50,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <form action="upload.php" method="post" enctype="multipart/form-data">
             <input type="file" name="fileToUpload" required>
-            <button type="submit">Upload</button>
+            <label for="file" id="customFileLabel">No file chosen</label>
+            <button type="submit" class="btn">Upload</button>
         </form>
     </div>
 </body>
