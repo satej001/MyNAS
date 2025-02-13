@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="upload-btn-wrapper">
+    <div class="auth-container">
         <h2>Upload a File</h2>
         
         <?php if (isset($message)) echo "<p class='message'>$message</p>"; ?>

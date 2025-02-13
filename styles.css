@@ -135,9 +135,6 @@ button, input {
     color: #3498db;
 }
 
-.auth-container a:hover {
-    text-decoration: underline;
-}
 
 /* Dashboard */
 .dashboard {
@@ -364,5 +361,19 @@ button, input {
 
 .message:contains("❌") {
     background: #dc3545;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    padding: 10px;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between; /* Spaces out file name and button */
+    align-items: center;
+    border-bottom: 1px solid #333;  /* Adds a separator line */
 }
 
