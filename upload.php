@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="auth-container">
+    <div class="upload-btn-wrapper">
         <h2>Upload a File</h2>
         
         <?php if (isset($message)) echo "<p class='message'>$message</p>"; ?>
@@ -51,7 +51,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form action="upload.php" method="post" enctype="multipart/form-data">
             <button class="btn" id="choose-file-btn">Choose File</button>
             <input type="file" id="file-input"/>
-            <span id="file-chosen">No File Chosen</span>
             <button type="submit" class="btn">Upload</button>
         </form>
     </div>
