@@ -46,7 +46,7 @@ if (isset($_GET['file'])) {
                 foreach ($files as $file) {
                     echo "<li>
                         <span>$file</span>
-                        <button href='download.php?file=" . urlencode($file) . "' class='btn-download'>Download</button>
+                        <button href='download.php?file=" . urlencode($file) . "' class='btn'>Download</button>
                         </li>";
                 }
             } else {
