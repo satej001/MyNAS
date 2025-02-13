@@ -370,10 +370,31 @@ ul {
 
 li {
     padding: 10px;
-    font-size: 18px;
+    font-size: 20px;
     display: flex;
     justify-content: space-between; /* Spaces out file name and button */
     align-items: center;
     border-bottom: 1px solid #333;  /* Adds a separator line */
 }
 
+li:last-child {
+    border-bottom: none;
+}
+
+.btn-download {
+    display: inline-block;
+    padding: 5px 10px;  /* Reduced padding */
+    font-size: 14px;     /* Smaller font size */
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+    background: darkred;
+    color: white;
+    text-decoration: none;
+    border: none;
+}
+
+.btn-download:hover {
+    background: darkred;
+}
