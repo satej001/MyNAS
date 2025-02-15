@@ -132,7 +132,7 @@ button, input {
 }
 
 .auth-container a {
-    color: #3498db;
+    color: cyan;
 }
 
 
@@ -369,12 +369,13 @@ ul {
 }
 
 li {
-    padding: 10px;
-    font-size: 20px;
+    /*padding: 10px;
+    font-size: 20px;*/
     display: flex;
     justify-content: space-between; /* Spaces out file name and button */
     align-items: center;
-    border-bottom: 1px solid #333;  /* Adds a separator line */
+    gap: 20px;
+    margin-bottom: 15px;  /* Adds a separator line */
 }
 
 li:last-child {
@@ -382,3 +383,8 @@ li:last-child {
 }
 
 
+.file-name {
+    color: #8B0000;  /* Dark Red */
+    font-weight: bold;
+    font-size: 18px;
+}

@@ -1,35 +1,45 @@
 <?php
+
+$message = ""; //Initialize Message Variable
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $targetDir = "uploads/";  // Directory to save uploaded files
-    $targetFile = $targetDir . basename($_FILES["fileToUpload"]["name"]);
-    $uploadOk = 1;
-    $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+    if (isset($_FILES["fileToUpload"]) && $_FILES["fileToUpload"]["error"] == 0) { // Ensure a file is selected
+        $targetDir = "uploads/";  
+        $fileSize = $_FILES["fileToUpload"]["size"];
+	$targetFile = $targetDir . basename($_FILES["fileToUpload"]["name"]);
+        $uploadOk = 1;
+        $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 
-    // Check if the directory exists, if not, create it
-    if (!is_dir($targetDir)) {
-        mkdir($targetDir, 0777, true);
-    }
-
-    // Check file size (limit: 5MB)
-    if ($_FILES["fileToUpload"]["size"] > 5 * 1024 * 1024) {
-        $message = "❌ Sorry, your file is too large.";
-        $uploadOk = 0;
-    }
-
-    // Allow only certain file formats
-    $allowedTypes = ["jpg", "png", "pdf", "docx", "txt"];
-    if (!in_array($fileType, $allowedTypes)) {
-        $message = "❌ Only JPG, PNG, PDF, DOCX, and TXT files are allowed.";
-        $uploadOk = 0;
-    }
-
-    // Check if everything is okay and upload the file
-    if ($uploadOk == 1) {
-        if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $targetFile)) {
-            $message = "✅ The file <strong>" . htmlspecialchars(basename($_FILES["fileToUpload"]["name"])) . "</strong> has been uploaded.";
-        } else {
-            $message = "❌ Sorry, there was an error uploading your file.";
+        // Check if the directory exists, if not, create it
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0777, true);
         }
+
+	$message = "📂 Selected file: <strong>$fileName</strong>";
+
+        // Check file size (limit: 5MB)
+        if ($fileSize > 5 * 1024 * 1024) {
+            $message = "❌ Sorry, your file is too large.";
+            $uploadOk = 0;
+        }
+
+        // Allow only certain file formats
+        $allowedTypes = ["jpg", "png", "pdf", "docx", "txt", "pptx"];
+        if (!in_array($fileType, $allowedTypes)) {
+            $message = "❌ Only JPG, PNG, PDF, DOCX, PPTX and TXT files are allowed.";
+            $uploadOk = 0;
+        }
+
+        // Check if everything is okay and upload the file
+        if ($uploadOk == 1) {
+            if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $targetFile)) {
+                $message = "✅ The file <strong>" . htmlspecialchars(basename($_FILES["fileToUpload"]["name"])) . "</strong> has been uploaded.";
+            } else {
+                $message = "❌ Sorry, there was an error uploading your file.";
+            }
+        }
+    } else {
+        $message = "❌ No file selected. Please choose a file to upload.";
     }
 }
 ?>
@@ -49,8 +59,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php if (isset($message)) echo "<p class='message'>$message</p>"; ?>
 
         <form action="upload.php" method="post" enctype="multipart/form-data">
-            <button class="btn" id="choose-file-btn">Choose File</button>
-            <input type="file" id="file-input"/>
+            <button type="button" class="btn" id="choose-file-btn">Choose File</button>
+            <input type="file" id="file-input" name="fileToUpload" onchange="displayFileName()" hidden/>
             <button type="submit" class="btn">Upload</button>
         </form>
     </div>
@@ -63,13 +73,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         const fileChosenText = document.getElementById("file-chosen");
 
         chooseFileBtn.addEventListener("click", function () {
-            fileInput.click(); // This should trigger the file selection window
+            fileInput.click(); // Trigger file selection window
         });
 
         fileInput.addEventListener("change", function () {
             fileChosenText.textContent = this.files.length > 0 ? this.files[0].name : "No file chosen";
         });
     });
-</script>
+
+	function displayFileName() {
+        let fileInput = document.getElementById("file-input");
+        if (fileInput.files.length > 0) {
+            document.querySelector(".message").innerHTML = "📂 Selected file: <strong>" + fileInput.files[0].name + "</strong>";
+        }
+    }
+
+    </script>
 </body>
 </html>

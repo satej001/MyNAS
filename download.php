@@ -44,9 +44,9 @@ if (isset($_GET['file'])) {
             $files = array_diff(scandir($uploadDir), array('.', '..'));
             if (!empty($files)) {
                 foreach ($files as $file) {
-                    echo "<li>
-                        <span>$file</span>
-                        <button href='download.php?file=" . urlencode($file) . "' class='btn'>Download</button>
+                    echo "<li class='file-name'>
+			<span color='white'>$file</span>
+                        <a href='download.php?file=" . urlencode($file) . "' class='btn'>Download</a>
                         </li>";
                 }
             } else {
