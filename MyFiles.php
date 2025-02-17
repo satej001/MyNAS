@@ -1,10 +1,8 @@
 <?php
-$uploadDir = "uploads/";
-$backupDir = "backups/";
+$uploadDir = "uploads/"; // Folder for uploaded files
 
-function listFiles($directory, $title) {
-    echo "<h2>$title</h2>";
-    
+// Function to list files
+function listFiles($directory) {
     if (!is_dir($directory)) {
         echo "<p>No files found.</p>";
         return;
@@ -16,20 +14,18 @@ function listFiles($directory, $title) {
     } else {
         echo "<ul>";
         foreach ($files as $file) {
-            $filePath = $directory . $file;
-            echo "<li>📄 <strong>$file</strong> 
-                    <a href='$filePath' download>⬇️ Download</a> | 
+            echo "<li class='file-name'>
+                    <span>$file</span>
                     <form action='delete.php' method='post' style='display:inline;'>
                         <input type='hidden' name='file' value='$file'>
                         <input type='hidden' name='folder' value='$directory'>
-                        <button type='submit' onclick='return confirm(\"Are you sure?\")'>🗑 Delete</button>
+                        <button type='submit' onclick='return confirm(\"Are you sure you want to delete $file?\")' class='btn delete-btn'>🗑 Delete</button>
                     </form>
                   </li>";
         }
         echo "</ul>";
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -41,12 +37,9 @@ function listFiles($directory, $title) {
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>📁 My Files</h1>
-
-        <?php listFiles($uploadDir, "Uploaded Documents & Images"); ?>
-        <?php listFiles($backupDir, "Backup Files"); ?>
-
+    <div class="auth-container">
+        <h2>Available Files</h2>
+        <?php listFiles($uploadDir); ?>
     </div>
 </body>
 </html>
