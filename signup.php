@@ -1,4 +1,8 @@
 <?php
+$message = ""; // Initialize message variable
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Capture form inputs
     $full_name = isset($_POST['name']) ? trim($_POST['name']) : "";
@@ -31,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Password must contain at least one number.";
     }
     if (!preg_match('/[\W_]/', $password)) { // \W matches any non-word character (special symbol)
-        $errors[] = "Password must contain at least one special character (e.g. @#$%^&*!).";
+        $errors[] = "Password must contain at least one special character <br> (e.g. @#$%^&*!).";
     }
 
     if ($password !== $confirm_password) {
@@ -45,35 +49,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Check connection
         if ($conn->connect_error) {
-            die("Database connection failed: " . $conn->connect_error);
-        }
-
-        // Hash the password before storing it
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-        // Insert user data into database
-        $stmt = $conn->prepare("INSERT INTO fileark_users (full_name, email, password) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $full_name, $email, $hashed_password);
-
-        if ($stmt->execute()) {
-            echo "<p style='color: green;'>Successfully signed up! Redirecting to login...</p>";
-            header("refresh:2;url=login.php"); // Redirect after 2 seconds
+            $message = "❌ Database connection failed: " . $conn->connect_error;
         } else {
-            echo "<p style='color: red;'>Error: " . $stmt->error . "</p>";
-        }
+            // Hash the password before storing it
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-        // Close connections
-        $stmt->close();
-        $conn->close();
-    } else {
-        // Display errors
-        foreach ($errors as $error) {
-            echo "<p style='color: red;'>$error</p>";
+            // Insert user data into database
+            $stmt = $conn->prepare("INSERT INTO fileark_users (full_name, email, password) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $full_name, $email, $hashed_password);
+
+            if ($stmt->execute()) {
+                $message = "✅ Successfully signed up! Redirecting to login...";
+                header("refresh:2;url=login.php"); // Redirect after 2 seconds
+            } else {
+                $message = "❌ Error: " . $stmt->error;
+            }
+
+            // Close connections
+            $stmt->close();
+            $conn->close();
         }
+    } else {
+        // Concatenate all errors into the message
+        $message = implode("<br>", $errors);
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -87,6 +88,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="auth-page">
         <div class="auth-container">
             <h2>Sign Up</h2>
+
+            <?php if (!empty($message)): ?>
+                <p class="message" style="color: <?php echo (strpos($message, '✅') !== false) ? 'green' : 'darkred'; ?>;">
+                    <?php echo $message; ?>
+                </p>
+            <?php endif; ?>
+
             <form class="auth-form" action="signup.php" method="POST">
                 <label for="name">Full Name</label>
                 <input type="text" id="name" name="name" placeholder="Enter your full name" required>
@@ -107,4 +115,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </body>
 </html>
-
