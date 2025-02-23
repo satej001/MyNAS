@@ -1,8 +1,32 @@
 <?php
+session_start(); // Start session for CSRF token
+$message = ""; // Initialize message variable
+
+error_reporting(0); // Disable error reporting in production
+
+require_once '/var/www/html/MyNAS/vendor/autoload.php';
+
+$dotenv = Dotenv\Dotenv::createImmutable('/var/www/randomdirectory');
+$dotenv->load();
+
+$dbHost = $_ENV['DB_HOST'];
+$dbUser = $_ENV['DB_USER'];
+$dbPass = $_ENV['DB_PASSWORD'];
+$dbName = $_ENV['DB_NAME'];
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Capture form inputs
-    $full_name = isset($_POST['name']) ? trim($_POST['name']) : "";
-    $email = isset($_POST['email']) ? trim($_POST['email']) : "";
+    // CSRF Protection
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        error_log("CSRF validation failed for IP: " . $_SERVER['REMOTE_ADDR']);
+
+	$_SESSION['error'] = "Your session expired. Please try again.";
+	header("Location: signup.php");
+	exit();
+    }
+
+    // Capture and sanitize user inputs
+    $full_name = isset($_POST['name']) ? trim(htmlspecialchars($_POST['name'], ENT_QUOTES, 'UTF-8')) : "";
+    $email = isset($_POST['email']) ? trim(filter_var($_POST['email'], FILTER_SANITIZE_EMAIL)) : "";
     $password = isset($_POST['password']) ? $_POST['password'] : "";
     $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : "";
 
@@ -18,62 +42,62 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Password strength check
-    if (strlen($password) < 8) {
-        $errors[] = "Password must be at least 8 characters.";
-    }
-    if (!preg_match('/[A-Z]/', $password)) {
-        $errors[] = "Password must contain at least one uppercase letter.";
-    }
-    if (!preg_match('/[a-z]/', $password)) {
-        $errors[] = "Password must contain at least one lowercase letter.";
-    }
-    if (!preg_match('/[0-9]/', $password)) {
-        $errors[] = "Password must contain at least one number.";
-    }
-    if (!preg_match('/[\W_]/', $password)) { // \W matches any non-word character (special symbol)
-        $errors[] = "Password must contain at least one special character (e.g. @#$%^&*!).";
+    if (strlen($password) < 8 || 
+        !preg_match('/[A-Z]/', $password) || 
+        !preg_match('/[a-z]/', $password) || 
+        !preg_match('/[0-9]/', $password) || 
+        !preg_match('/[\W_]/', $password)) {
+        $errors[] = "Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.";
     }
 
     if ($password !== $confirm_password) {
         $errors[] = "Passwords do not match.";
     }
 
-    // If no errors, proceed with database storage
     if (empty($errors)) {
-        // Database connection (change credentials accordingly)
-        $conn = new mysqli("localhost", "fileark_user", "#@Ck3r1sD3f3nd3r+00!", "mysql");
+        // Database connection
+        $conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
 
-        // Check connection
         if ($conn->connect_error) {
-            die("Database connection failed: " . $conn->connect_error);
+            error_log("Database connection failed: " . $conn->connect_error); // Log instead of displaying
+            die("An error occurred. Please try again later.");
         }
 
-        // Hash the password before storing it
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        // Check if email already exists
+        $stmt = $conn->prepare("SELECT id FROM fileark_users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
 
-        // Insert user data into database
-        $stmt = $conn->prepare("INSERT INTO fileark_users (full_name, email, password) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $full_name, $email, $hashed_password);
-
-        if ($stmt->execute()) {
-            echo "<p style='color: green;'>Successfully signed up! Redirecting to login...</p>";
-            header("refresh:2;url=login.php"); // Redirect after 2 seconds
+        if ($stmt->num_rows > 0) {
+            $message = "❌ This email is already registered. Please use a different email.";
         } else {
-            echo "<p style='color: red;'>Error: " . $stmt->error . "</p>";
+            // Hash the password securely
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+            // Insert user data into database
+            $stmt = $conn->prepare("INSERT INTO fileark_users (full_name, email, password) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $full_name, $email, $hashed_password);
+
+            if ($stmt->execute()) {
+                $message = "✅ Successfully signed up! Redirecting to login...";
+                header("refresh:2;url=login.php");
+            } else {
+                error_log("Database error: " . $stmt->error); // Log error instead of showing it
+                $message = "❌ An error occurred. Please try again.";
+            }
         }
 
-        // Close connections
         $stmt->close();
         $conn->close();
     } else {
-        // Display errors
-        foreach ($errors as $error) {
-            echo "<p style='color: red;'>$error</p>";
-        }
+        $message = implode("<br>", $errors);
     }
 }
-?>
 
+// Generate CSRF token
+$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -87,7 +111,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="auth-page">
         <div class="auth-container">
             <h2>Sign Up</h2>
+	    	<?php
+			if (isset($_SESSION['error'])) {
+    			echo '<p class="message" style="color: darkred;">' . $_SESSION['error'] . '</p>';
+    			unset($_SESSION['error']); // Clear the message after showing
+		}
+		?>
+
+            <?php if (!empty($message)): ?>
+                <p class="message" style="color: <?php echo (strpos($message, '✅') !== false) ? 'green' : 'darkred'; ?>;">
+                    <?php echo $message; ?>
+                </p>
+            <?php endif; ?>
+
             <form class="auth-form" action="signup.php" method="POST">
+		<input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+
                 <label for="name">Full Name</label>
                 <input type="text" id="name" name="name" placeholder="Enter your full name" required>
 
@@ -107,4 +146,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </body>
 </html>
-

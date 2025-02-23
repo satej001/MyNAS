@@ -1,5 +1,15 @@
 <?php
-$uploadDir = "backup/"; // Folder where files are stored
+
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.html");
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];
+$uploadDir = "backup/$user_id/"; // Folder where files are stored
+
 
 // Check if a file is requested for download
 if (isset($_GET['file'])) {
@@ -21,6 +31,11 @@ if (isset($_GET['file'])) {
         flush();
         readfile($filePath);
         exit;
+	$stmt = $conn->prepare("INSERT INTO fileark_logs (user_id, action, filename) VALUES (?, 'Restore', ?)");
+	$stmt->bind_param("is", $_SESSION['user_id'], $restored_file);
+	$stmt->execute();
+
+
     } else {
         echo "<p style='color: red;'>Error: File not found.</p>";
     }
@@ -33,6 +48,7 @@ if (isset($_GET['file'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Download Files</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -46,7 +62,7 @@ if (isset($_GET['file'])) {
                 foreach ($files as $file) {
                     echo "<li class='file-name'>
 			<span color='white'>$file</span>
-                        <a href='download.php?file=" . urlencode($file) . "' class='btn'>Download</a>
+                        <a href='download.php?file=" . urlencode($file) . "' class='btn'>Restore</a>
                         </li>";
                 }
             } else {
@@ -54,6 +70,10 @@ if (isset($_GET['file'])) {
             }
             ?>
         </ul>
+
+	<nav class="sidebar">
+                <li><a href="Welcome.php" class="icon-link"> <span>FileARK</span> <i class="fas fa-home"></i></a></li>
+        </nav>
     </div>
 </body>
 </html>

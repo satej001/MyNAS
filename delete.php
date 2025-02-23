@@ -1,10 +1,32 @@
 <?php
+
+session_start();
+
+// Redirect to index.html if not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.html"); // Redirect to home page
+    exit();
+}
+
+$usr_id = $_SESSION['user_id'];
+$baseDirs = ["/var/www/html/MyNAS/uploads/$usr_id", "/var/www/html/MyNAS/backup/$usr_id"];
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["file"]) && isset($_POST["folder"])) {
     $file = basename($_POST["file"]);
-    $folder = $_POST["folder"];
-    $filePath = $folder . $file;
+    $folder = rtrim($_POST["folder"], "/") . "/";
+    $filePath = realpath($folder . $file);
 
-    if (file_exists($filePath)) {
+    $isValidPath = false;
+
+	foreach ($baseDirs as $baseDir) {
+        	if($filePath !== false && strpos($filePath, $baseDir) === 0) {
+                	$isValidPath = true;
+			break;
+        	}
+	}
+
+    if ($isValidPath && file_exists($filePath)) {
         if (unlink($filePath)) {
             header("Location: MyFiles.php?msg=File deleted successfully");
             exit();
@@ -13,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["file"]) && isset($_POS
             exit();
         }
     } else {
-        header("Location: MyFiles.php?msg=File not found");
+        header("Location: MyFiles.php?msg=Invalid File Path");
         exit();
     }
 } else {
