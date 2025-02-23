@@ -64,11 +64,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
      			}
     		} else {
         		// Incorrect credentials (generic message for security)
-        		$error = "❌ Acess Denied!";
+        		$error = "❌ Access Denied!";
     		}
 	    } else {
     		// Incorrect credentials (generic message for security)
-    		$error = "❌ Acess Denied!";
+    		$error = "❌ Access Denied!";
 	    }
 
 	   // Close the prepared statement and database connection
