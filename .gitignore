@@ -1,0 +1,5 @@
+#Ignore Directories & Files
+
+upload/
+backup/
+vendor/

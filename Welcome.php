@@ -6,7 +6,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['logged_in'] !== 1) {
     exit();
 }
 
-require_once '/var/www/html/MyNAS/vendor/autoload.php';
+require_once '/var/www/MyNAS/vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable('/var/www/randomdirectory');
 $dotenv->load();

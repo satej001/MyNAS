@@ -56,11 +56,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->close();
                 $conn->close();
             } else {
-                $message = "❌ Sorry, there was an error uploading your file.";
+                $message = "❌ Sorry, there was an error backing up your file.";
             }
         }
     } else {
-        $message = "❌ No file selected. Please choose a file to upload.";
+        $message = "❌ No file selected. Please choose a file to backup.";
     }
 }
 ?>
@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form action="backup.php" method="post" enctype="multipart/form-data">
             <button type="button" class="btn" id="choose-file-btn">Choose File</button>
             <input type="file" id="file-input" name="fileToUpload" onchange="displayFileName()" hidden/>
-            <button type="submit" class="btn">Upload</button>
+            <button type="submit" class="btn">Backup</button>
         </form>
     </div>
 
