@@ -2,8 +2,11 @@
 
 session_start();
 
+/*error_reporting(E_ALL);
+ini_set('display_errors', 1);*/
+
 if (!isset($_SESSION['user_id'])) {
-    header("Location: index.html");
+    header("Location: login.php");
     exit();
 }
 
@@ -21,13 +24,6 @@ if (isset($_GET['file'])) {
     $filePath = $uploadDir . $fileName;
 
     if (file_exists($filePath)) {
-        // Log file download
-        $stmt = $conn->prepare("INSERT INTO fileark_logs (user_id, action, filename) VALUES (?, 'Downloaded', ?)");
-        $stmt->bind_param("is", $user_id, $fileName);
-        $stmt->execute();
-        $stmt->close();
-        $conn->close();
-
         // Set headers for file download
         header("Content-Description: File Transfer");
         header("Content-Type: application/octet-stream");
@@ -47,6 +43,44 @@ if (isset($_GET['file'])) {
     }
 }
 
+// Function to list files
+function listFiles($directory) {
+    if (!is_dir($directory)) {
+        return;
+    }
+
+    if(!is_dir($directory)) {
+        return;
+    }
+
+    $files = array_diff(scandir($directory), array('.', '..'));
+    if (empty($files)) {
+        return;
+    } else {
+        echo "<ul>";
+        foreach ($files as $file) {
+
+
+                    $maxLength = 15;
+                    $fileInfo = pathinfo($file);
+                    $fileBase = $fileInfo['filename'];
+                    $fileExt = isset($fileInfo['extension']) ? '.' . $fileInfo['extension'] : '';
+                    if(strlen($fileBase) > $maxLength) {
+                        $displayName = substr($fileBase, 0, $maxLength) . '...' . $fileExt;
+                    } else {
+                        $displayName = $file;
+                    }
+
+                    echo "<li class='file-name'>
+                    <span>$displayName</span>
+                    <a href='download.php?file=" . urlencode($file) . "' class='btn'>Download</a>
+
+                  </li>";
+        }
+        echo "</ul>";
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -54,29 +88,22 @@ if (isset($_GET['file'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download Files</title>
+    <title>Download</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="auth-container">
         <h2>Available Files</h2>
-        <ul>
-            <?php
-            // List all files in the user's upload directory
-            $files = array_diff(scandir($uploadDir), array('.', '..'));
-            if (!empty($files)) {
-                foreach ($files as $file) {
-                    echo "<li class='file-name'>
-                        <span style='color:darkred;'>$file</span>
-                        <a href='download.php?file=" . urlencode($file) . "' class='btn'>Download</a>
-                    </li>";
-                }
-            } else {
-                echo "<p>No files available for download.</p>";
-            }
-            ?>
-        </ul>
+	<div class="file-list">
+        <?php
+        // List all files in the backup directory
+        if (is_dir($uploadDir) && count(array_diff(scandir($uploadDir), array('.', '..'))) > 0) {
+            listFiles($uploadDir);
+        } else {
+            echo "<p>No Files Available.</p>";
+        }
+        ?>
         <nav class="sidebar">
             <li><a href="Welcome.php" class="icon-link"> <span>FileARK</span> <i class="fas fa-home"></i></a></li>
         </nav>

@@ -2,15 +2,15 @@
 session_start();
 $message = ""; // Initialize message variable
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+/*error_reporting(E_ALL);
+ini_set('display_errors', 1);*/
 
 if (!isset($_SESSION['user_email'])) {
     header("Location: forget_pass_email.php");
     exit();
 }
 
-require_once '/var/www/html/MyNAS/vendor/autoload.php';
+require_once '/var/www/MyNAS/vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable('/var/www/randomdirectory');
 $dotenv->load();

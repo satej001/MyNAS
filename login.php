@@ -3,7 +3,7 @@ session_start(); // Start the session
 
 $error = ""; // Initialize error message variable
 
-require_once '/var/www/html/MyNAS/vendor/autoload.php';
+require_once '/var/www/MyNAS/vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable('/var/www/randomdirectory');
 $dotenv->load();
