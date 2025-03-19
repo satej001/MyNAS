@@ -7,6 +7,9 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+/*error_reporting(E_ALL);
+ini_set('display_errors', 1);*/
+
 $user_id = $_SESSION['user_id'];
 $backupDir = "backup/$user_id/"; // User-specific directory
 
@@ -43,24 +46,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Check if everything is okay and upload the file
         if ($uploadOk == 1) {
             if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $targetFile)) {
-                $message = "✅ The file <strong>" . htmlspecialchars($fileName) . "</strong> has been uploaded.";
-                
-                // Log upload to database
-                $conn = new mysqli("localhost", "username", "password", "database"); // Replace with your DB credentials
-                if ($conn->connect_error) {
-                    die("Database connection failed: " . $conn->connect_error);
-                }
-                $stmt = $conn->prepare("INSERT INTO fileark_logs (user_id, action, filename) VALUES (?, 'Backup', ?)");
-                $stmt->bind_param("is", $user_id, $fileName);
-                $stmt->execute();
-                $stmt->close();
-                $conn->close();
+                $message = "✅ The file " . htmlspecialchars($fileName) . " has been uploaded.";
+
             } else {
-                $message = "❌ Sorry, there was an error uploading your file.";
+                $message = "❌ Sorry, there was an error backing up your file.";
             }
         }
     } else {
-        $message = "❌ No file selected. Please choose a file to upload.";
+        $message = "❌ No file selected. Please choose a file to backup.";
     }
 }
 ?>
@@ -70,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Backup File</title>
+    <title>Backup</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -83,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form action="backup.php" method="post" enctype="multipart/form-data">
             <button type="button" class="btn" id="choose-file-btn">Choose File</button>
             <input type="file" id="file-input" name="fileToUpload" onchange="displayFileName()" hidden/>
-            <button type="submit" class="btn">Upload</button>
+            <button type="submit" class="btn">Backup</button>
         </form>
     </div>
 

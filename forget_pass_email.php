@@ -4,7 +4,7 @@ session_start();
 
 $invalid_email = "";
 
-require_once '/var/www/html/MyNAS/vendor/autoload.php';
+require_once '/var/www/MyNAS/vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable('/var/www/randomdirectory');
 $dotenv->load();

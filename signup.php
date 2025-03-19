@@ -4,7 +4,7 @@ $message = ""; // Initialize message variable
 
 error_reporting(0); // Disable error reporting in production
 
-require_once '/var/www/html/MyNAS/vendor/autoload.php';
+require_once '/var/www/MyNAS/vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable('/var/www/randomdirectory');
 $dotenv->load();
@@ -105,7 +105,7 @@ $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - FileARK</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=1.0">
 </head>
 <body>
     <div class="auth-page">
